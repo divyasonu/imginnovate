@@ -6,19 +6,47 @@ const Search = () => {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherFirstData] = useState([]);
 
+  const [data, setData] = useState([]);
+  console.log(data, "data");
+  const [location, setCityNameFromAPI] = useState("");
+
   const fetchWeatherData = () => {
     getWetherData(city).then((resp) => {
-    console.log(resp.list[0],"response")
-      setWeatherFirstData(resp.list[0]);
-      // setWeatherSecData(resp.list[0]);
-      // setWeatherThirdData(resp.list[0]);
-      // setWeatherFourData(resp.list[0]);
-      // setWeatherFiveData(resp.list[0]);
+      setCityNameFromAPI(resp?.city?.name);
+
+      const filteredData = resp.list.filter((data, index, array) => {
+        const currentDate = new Date();
+        const forecastDate = new Date(data.dt_txt + " UTC");
+
+        return (
+          forecastDate.getUTCHours() === 21 &&
+          forecastDate.getUTCDate() > currentDate.getUTCDate()
+        );
+      });
+
+      // Deduplicate by date
+      const uniqueDates = [];
+      const deduplicatedData = [];
+
+      filteredData.forEach((data) => {
+        const date = new Date(data.dt_txt + " UTC").toISOString().split("T")[0];
+
+        if (!uniqueDates.includes(date)) {
+          uniqueDates.push(date);
+          deduplicatedData.push(data);
+        }
+      });
+
+      console.log("Filtered Data:", filteredData);
+
+      const firstFiveRecords = filteredData.slice(0, 5);
+      setData(firstFiveRecords);
+
+      console.log("First Five Records:", firstFiveRecords);
     });
   };
 
   const handleChange = (e) => {
-    // console.log(e.target.value)
     setCity(e.target.value);
   };
   const handleKey = (e) => {
@@ -48,115 +76,35 @@ const Search = () => {
           </button>
         </form>
 
-        <div className="col mt-5 border">
-          <div className="text-white">Date: {weatherData?.dt_txt}</div>
-          <div className="temp d-flex row text-white">
-            <div className="col border text-white">
-              min:{weatherData?.dt_txt}
+        <div className="h2 text-white display-2">{location} </div>
+
+        {data?.map((item, index) => {
+          return (
+            <div className="col mt-5 border" key={index}>
+              <div className="text-white">Date: {item?.dt_txt}</div>
+              <div className="temp d-flex row text-white">
+                <div className="border">Temperature</div>
+                <div className="col border text-white">Min</div>
+                <div className="col border text-white">Max</div>
+              </div>
+              <div className="temp d-flex row text-white">
+                <div className="col border">{item?.main?.temp_max}</div>
+
+                <div className="col border">{item?.main?.temp_min}</div>
+              </div>
+              <div className="temp d-flex row text-white">
+                <div className="col border">Humidity</div>
+                <div className="col border">{item?.main?.humidity}</div>
+              </div>
+              <div className="temp d-flex row text-white">
+                <div className="col border">Pressure</div>
+                <div className="col border">{item?.main?.pressure}</div>
+              </div>
             </div>
-            <div className="col border text-white">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-        </div>
-       < div className="col mt-5 border">
-          <div className="text-white">Date: </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border text-white">
-              min:
-            </div>
-            <div className="col border text-white">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-        </div>
-        <div className="col mt-5 border">
-          <div className="text-white">Date: </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border text-white">
-              min:{weatherData?.dt_txt}
-            </div>
-            <div className="col border text-white">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-        </div>
-        <div className="col mt-5 border">
-          <div className="text-white">Date: </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border text-white">
-              min:{weatherData?.dt_txt}
-            </div>
-            <div className="col border text-white">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-        </div>
-        <div className="col mt-5 border">
-          <div className="text-white">Date: </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border text-white">
-              min:{weatherData?.dt_txt}
-            </div>
-            <div className="col border text-white">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-          <div className="temp d-flex row text-white">
-            <div className="col border">min</div>
-            <div className="col border">max</div>
-          </div>
-        </div>
+          );
+        })}
       </div>
-      
     </div>
-    
   );
 };
 export default Search;
